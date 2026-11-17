@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TradoLearn</title>
+<style>
+  :root {
+    --bg: #000000;
+    --flaeche: #0c120e;
+    --linie: #1d2a22;
+    --gruen: #1fd16b;
+    --gruen-dunkel: #0e8a45;
+    --rot: #ff4d4f;
+    --text: #e9efe9;
+    --text-leise: #8fa196;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+    line-height: 1.5;
+    padding-bottom: 8rem;
+  }
+  .kerzen {
+    position: fixed; inset: 0; width: 100%; height: 100%;
+    opacity: .12; pointer-events: none; z-index: 0;
+  }
+  main {
+    position: relative; z-index: 1;
+    max-width: 40rem; margin: 0 auto; padding: 3rem 1.25rem 0;
+  }
+  h1 {
+    margin: 0 0 .5rem;
+    font-size: clamp(2.2rem, 8vw, 3.4rem);
+    font-weight: 800; letter-spacing: .01em;
+  }
+  h1 span { color: var(--gruen); }
+  .intro {
+    margin: 0 0 2.5rem;
+    font-size: 1.15rem; color: var(--text-leise);
+    max-width: 32rem;
+  }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .9rem; }
+  li {
+    background: var(--flaeche);
+    border: 1px solid var(--linie);
+    border-left: 4px solid var(--gruen);
+    border-radius: .5rem;
+    padding: 1rem 1.2rem;
+  }
+  li:nth-child(even) { border-left-color: var(--rot); }
+  h2 { margin: 0 0 .2rem; font-size: 1.15rem; }
+  li p { margin: 0; color: var(--text-leise); }
+
+  .leiste {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 2;
+    padding: 1.2rem 1.25rem calc(1.2rem + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(to top, #000 70%, rgba(0,0,0,0));
+    display: flex; justify-content: center;
+  }
+  .start {
+    font: inherit;
+    font-size: clamp(1.6rem, 6vw, 2.4rem);
+    font-weight: 800;
+    color: #04130a;
+    background: var(--gruen);
+    border: 0; border-radius: 999px;
+    width: 100%; max-width: 32rem;
+    padding: .65em 1em;
+    cursor: pointer;
+    box-shadow: 0 .35rem 0 var(--gruen-dunkel);
+    transition: transform .08s ease, box-shadow .08s ease;
+  }
+  .start:active { transform: translateY(.3rem); box-shadow: 0 .05rem 0 var(--gruen-dunkel); }
+  .start:focus-visible { outline: 3px solid var(--text); outline-offset: 4px; }
+</style>
+</head>
+<body>
+  <svg class="kerzen" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g stroke-width="2">
+      <g stroke="#1fd16b" fill="#1fd16b"><path d="M20 200v-90M60 170v-80M140 130v-70M220 100v-80M300 70v-60M370 50v-50"/><rect x="14" y="140" width="12" height="40"/><rect x="54" y="110" width="12" height="40"/><rect x="134" y="80" width="12" height="36"/><rect x="214" y="50" width="12" height="36"/><rect x="294" y="30" width="12" height="28"/><rect x="364" y="14" width="12" height="24"/></g>
+      <g stroke="#ff4d4f" fill="#ff4d4f"><path d="M100 120v-60M180 160v-70M260 120v-70M335 90v-50"/><rect x="94" y="80" width="12" height="36"/><rect x="174" y="110" width="12" height="40"/><rect x="254" y="80" width="12" height="32"/><rect x="329" y="55" width="12" height="28"/></g>
+    </g>
+  </svg>
+
+  <main>
+    <h1>Trado<span>Learn</span></h1>
+    <p class="intro">Hier lernst du Trading Schritt für Schritt: ganz einfach am Anfang, und mit jedem Level etwas schwerer.</p>
+
+    <ul>
+      <li>
+        <h2>Lernen in Levels</h2>
+        <p>Jedes Level erklärt ein Thema verständlich. Du startest bei den Grundlagen und arbeitest dich nach oben.</p>
+      </li>
+      <li>
+        <h2>Punkte sammeln</h2>
+        <p>Für jede gelöste Aufgabe bekommst du Punkte. Die kannst du später gegen Belohnungen einlösen.</p>
+      </li>
+      <li>
+        <h2>Trading-Simulator</h2>
+        <p>Probiere Trading direkt auf der Seite aus, mit Spielgeld und ohne Risiko.</p>
+      </li>
+      <li>
+        <h2>Dein Design</h2>
+        <p>Wähle aus mehreren Designs und wechsle jederzeit mit einem Tipp.</p>
+      </li>
+    </ul>
+  </main>
+
+  <div class="leiste">
+    <!-- Der Button hat noch keine Funktion -->
+    <button class="start" type="button">Get started</button>
+  </div>
+</body>
+</html>
