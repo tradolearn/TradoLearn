@@ -189,6 +189,17 @@
   .auswahl { margin-top: 1rem; }
   /* Runde Social-Icons statt eines großen "Weiterlernen"-Kastens */
   .weiterlernen { display: flex; justify-content: center; margin: 2rem auto 0; padding: 1.2rem 0; }
+  .about-seite { max-width: 860px; }
+  .about-seite .about-kicker { margin: 0 0 .65rem; color: var(--gruen); font-size: .78rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+  .about-seite h1 { max-width: 760px; margin-bottom: 1.2rem; }
+  .about-seite .about-lead { color: var(--text); font-size: clamp(1.08rem, 2vw, 1.25rem); line-height: 1.8; }
+  .about-abschnitt { margin-top: 2.6rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,.09); }
+  .about-abschnitt h2 { margin: 0 0 .7rem; font-size: clamp(1.25rem, 2vw, 1.6rem); letter-spacing: -.025em; }
+  .about-abschnitt p, .about-signoff p { color: var(--text-muted, #a5aaa5); line-height: 1.85; }
+  .about-signoff { margin-top: 2.4rem; padding-top: 1.4rem; border-top: 1px solid rgba(255,255,255,.09); }
+  .about-signoff strong, .about-signoff span { display: block; }
+  .about-signoff strong { font-size: 1.1rem; margin-top: 1rem; }
+  .about-signoff span { color: var(--text-muted, #a5aaa5); font-size: .9rem; margin-top: .2rem; }
   .sozial { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; }
   .sozial a { display: grid; place-items: center; width: 3.7rem; height: 3.7rem; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; color: white; text-decoration: none; background: #151815; box-shadow: none; transition: border-color .18s ease, opacity .18s ease; }
   .sozial a:hover:not([aria-disabled="true"]) { border-color: var(--gruen); }
@@ -371,10 +382,25 @@
 
     <!-- About us -->
     <div class="huelle" id="seite-about" hidden>
-      <div class="seite">
-        <h1 data-i18n="nav_about"></h1>
-        <p data-i18n="about_text"></p>
-      </div>
+      <article class="seite about-seite">
+        <p class="about-kicker">TradoLearn</p>
+        <h1 data-i18n="about_title"></h1>
+        <p class="about-lead" data-i18n="about_intro"></p>
+        <section class="about-abschnitt">
+          <h2 data-i18n="about_values_title"></h2>
+          <p data-i18n="about_values_text"></p>
+        </section>
+        <section class="about-abschnitt">
+          <h2 data-i18n="about_together_title"></h2>
+          <p data-i18n="about_together_text"></p>
+          <p data-i18n="about_belief_text"></p>
+        </section>
+        <div class="about-signoff">
+          <p data-i18n="about_closing"></p>
+          <strong>Simon &amp; Erik</strong>
+          <span data-i18n="about_founders"></span>
+        </div>
+      </article>
     </div>
 
     <!-- Support -->
@@ -445,7 +471,7 @@
   );
 
   /* Hier später deine echten Links eintragen (leer = Link noch inaktiv) */
-  const LINKS = { instagram: '', youtube: '', tiktok: '', discord: '' };
+  const LINKS = { instagram: '', youtube: '', tiktok: 'https://www.tiktok.com/@tradolearn', discord: 'https://discord.gg/QcwsYu7Pfz' };
 
   const $ = (id) => document.getElementById(id);
 
@@ -480,7 +506,15 @@
       off_p1: 'Weiterführende Level für Fortgeschrittene',
       off_p2: 'Punkte gegen Belohnungen einlösen',
       off_p3: 'Zusätzliche Designs zum Wechseln',
-      about_text: 'Kommt bald …',
+      about_title: 'Zwei Freunde. Eine Vision. TradoLearn.',
+      about_intro: 'Wir sind Simon und Erik, zwei Schulfreunde mit einer gemeinsamen Vision: eine Plattform aufzubauen, die Trading verständlicher macht und Menschen dabei hilft, ihren eigenen Weg in diesem Bereich zu finden. Die Idee zu TradoLearn entstand aus einem Traum. Aus diesem Traum wollen wir Schritt für Schritt etwas Echtes machen – einen Ort, an dem jeder Trading kennenlernen und sein Wissen weiterentwickeln kann.',
+      about_values_title: 'Was uns wichtig ist',
+      about_values_text: 'Trading ist mehr als Charts und Zahlen. Es geht darum, Märkte zu verstehen, Strategien kennenzulernen und fundierte Entscheidungen treffen zu können. Deshalb möchten wir verschiedene Bereiche verbinden: von Trading-Strategien und technischer Analyse über aktuelle Markttrends bis hin zu Trading-Psychologie und Risikomanagement. Wir wollen nicht einfach bestehende Inhalte wiederholen, sondern aktuelle Entwicklungen aufgreifen und das Lernerlebnis laufend verbessern.',
+      about_together_title: 'Gemeinsam besser werden',
+      about_together_text: 'TradoLearn befindet sich noch im Aufbau. Wir stehen am Anfang unserer Reise, haben viele Ideen und arbeiten daran, unsere Vision Wirklichkeit werden zu lassen. Unser Ziel ist eine vielseitige Lernplattform, die sowohl Einsteigern als auch Fortgeschrittenen etwas bietet. Mit interaktiven Lerninhalten möchten wir Wissen nicht nur vermitteln, sondern Lernen interessanter und zugänglicher machen.',
+      about_belief_text: 'Wir glauben, dass Lernen nie aufhört. Genau diese Einstellung möchten wir in TradoLearn einbringen.',
+      about_closing: 'Das ist TradoLearn. Unsere Idee, unser Antrieb und der Anfang von etwas, das wir gemeinsam aufbauen. Schön, dass du hier bist.',
+      about_founders: 'Gründer von TradoLearn',
       support_text: 'Du hast eine Frage, einen Fehler gefunden oder eine Idee für TradoLearn? Komm auf unseren Discord-Server. Dort helfen wir dir weiter und du triffst andere, die Trading lernen.',
       support_discord: 'Discord beitreten',
       fuss_folge: 'Weiterlernen', weiterlernen_text: 'Entdecke weitere Lerninhalte und Updates auf unseren Kanälen.', haftung: 'Keine Anlageberatung.',
@@ -530,7 +564,15 @@
       off_p1: 'Advanced levels for experienced learners',
       off_p2: 'Redeem points for rewards',
       off_p3: 'Extra themes you can switch between',
-      about_text: 'Coming soon …',
+      about_title: 'Two friends. One vision. TradoLearn.',
+      about_intro: 'We are Simon and Erik, two school friends with a shared vision: to build a platform that makes trading easier to understand and helps people find their own way into this field. TradoLearn started as a dream. Step by step, we want to turn that dream into something real—a place where anyone can explore trading and grow their knowledge.',
+      about_values_title: 'What matters to us',
+      about_values_text: 'Trading is more than charts and numbers. It is about understanding markets, learning different strategies and making informed decisions. That is why we want to bring several areas together: trading strategies, technical analysis, current market trends, trading psychology and risk management. Rather than simply repeating existing content, we want to cover relevant developments and keep improving the learning experience.',
+      about_together_title: 'Getting better together',
+      about_together_text: 'TradoLearn is still being built. We are at the beginning of our journey, full of ideas and working to turn our vision into reality. Our goal is to create a versatile learning platform for beginners and more experienced learners alike. With interactive content, we want to make learning not only informative, but also more engaging and accessible.',
+      about_belief_text: 'We believe learning never stops. That is exactly the mindset we want to bring to TradoLearn.',
+      about_closing: 'This is TradoLearn: our idea, our motivation and the beginning of something we are building together. We are glad you are here.',
+      about_founders: 'Founders of TradoLearn',
       support_text: 'Have a question, found a bug or got an idea for TradoLearn? Join our Discord server. We will help you there, and you can meet others who are learning trading.',
       support_discord: 'Join Discord',
       fuss_folge: 'Keep learning', weiterlernen_text: 'Discover more learning content and updates on our channels.', haftung: 'Not investment advice.',
