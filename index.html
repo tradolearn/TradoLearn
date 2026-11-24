@@ -97,8 +97,8 @@
   main { flex: 1; position: relative; z-index: 1; }
 
   /* ---------- Startseite ---------- */
-  .hero { display: grid; grid-template-columns: 1fr 1.05fr; gap: 3rem; align-items: center; padding: 4.5rem 0 3.5rem; }
-  @media (max-width: 920px) { .hero { grid-template-columns: 1fr; padding-top: 2.5rem; } }
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem; align-items: start; padding: 3rem 0 2.5rem; }
+  @media (max-width: 920px) { .hero { grid-template-columns: minmax(0, 1fr); padding-top: 2rem; } }
   h1 { margin: 0 0 1.2rem; font-size: clamp(2.5rem, 6.5vw, 4.2rem); line-height: 1.04; font-weight: 800; letter-spacing: -.02em; }
   h1 span { display: block; color: var(--gruen); }
   .lead { font-size: 1.15rem; color: var(--leise); max-width: 34rem; margin: 0 0 2rem; }
@@ -107,8 +107,8 @@
   .sektion { padding: 3rem 0; }
   .sektion h2 { font-size: clamp(1.7rem, 4vw, 2.3rem); margin: 0 0 .4rem; letter-spacing: -.01em; }
   .untertitel { color: var(--leise); margin: 0 0 2rem; }
-  .angebot { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
-  @media (max-width: 760px) { .angebot { grid-template-columns: 1fr; } }
+  .angebot { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  @media (max-width: 760px) { .angebot { grid-template-columns: minmax(0, 1fr); } }
   .paket {
     background: var(--flaeche); border: 1px solid var(--linie); border-radius: 1rem; padding: 1.6rem;
   }
@@ -127,15 +127,15 @@
 
   /* ---------- Simulator ---------- */
   .sim {
-    background: var(--flaeche); border: 1px solid var(--linie); border-radius: 1rem; padding: 1rem;
-    box-shadow: 0 0 60px rgba(74,168,104,.12);
+    background: linear-gradient(145deg, #151a16, #0e100e); border: 1px solid #304735; border-radius: 1.25rem; padding: clamp(1rem, 3vw, 1.5rem);
+    box-shadow: 0 18px 55px rgba(0,0,0,.28), 0 0 36px rgba(74,168,104,.10); width: 100%;
   }
   .sim-kopf { display: flex; gap: .8rem; align-items: flex-start; margin-bottom: .9rem; }
   .stier { font-size: 2rem; line-height: 1; }
   .sprechblase { background: var(--bg); border: 1px solid var(--linie); border-radius: .7rem; padding: .7rem .9rem; font-size: .92rem; }
   .sprechblase p { margin: 0 0 .3rem; }
   .sprechblase p:last-child { margin: 0; color: var(--leise); }
-  canvas { display: block; width: 100%; height: 220px; background: #070807; border-radius: .6rem; }
+  canvas { display: block; width: 100%; height: clamp(220px, 34vw, 300px); background: #070a08; border: 1px solid #202b22; border-radius: .85rem; }
   .legende { color: var(--leise); font-size: .85rem; margin: .6rem 0; }
   .chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .9rem; }
   .chip { background: var(--bg); border: 1px solid var(--linie); border-radius: .5rem; padding: .35rem .7rem; font-size: .9rem; color: var(--leise); }
@@ -146,9 +146,23 @@
     display: block; width: 100%; margin-top: .25rem; font: inherit; color: var(--text);
     background: var(--bg); border: 1px solid var(--linie); border-radius: .5rem; padding: .6rem .6rem;
   }
-  .sim-knoepfe { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; }
+  .sim-knoepfe { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; margin-top: .4rem; }
   .sim-knoepfe .voll { grid-column: 1 / -1; }
-  .sim-meldung { min-height: 1.5rem; margin: .8rem 0 0; color: var(--text); font-size: .92rem; }
+  .sim-meldung { min-height: 1.5rem; margin: .8rem 0 0; padding: .7rem .85rem; color: var(--text); font-size: .92rem; background: rgba(0,0,0,.2); border-radius: .6rem; }
+  .sim-kopf { align-items: stretch; }
+  .sprechblase { flex: 1; padding: 1rem; line-height: 1.65; }
+  .chips { display: grid; grid-template-columns: repeat(auto-fit, minmax(125px, 1fr)); gap: .65rem; }
+  .chip { padding: .7rem .8rem; border-radius: .7rem; }
+  .auswahl { margin-top: 1rem; }
+  .weiterlernen { margin: 1.5rem 0 0; padding: 1.4rem; background: var(--flaeche); border: 1px solid var(--linie); border-radius: 1rem; }
+  .weiterlernen h3 { margin: 0 0 .35rem; }
+  .weiterlernen p { color: var(--leise); margin: 0 0 1rem; }
+  .sozial { display: flex; flex-wrap: wrap; gap: .8rem; }
+  .sozial a { display: inline-flex; align-items: center; justify-content: center; gap: .55rem; min-width: 9rem; color: var(--text); text-decoration: none; font-weight: 700; border: 1px solid var(--linie); border-radius: .8rem; padding: .8rem 1rem; background: var(--bg); transition: border-color .15s, transform .15s, background .15s; }
+  .sozial a:hover:not([aria-disabled="true"]) { border-color: var(--gruen); color: var(--gruen); transform: translateY(-2px); background: #111a13; }
+  .sozial a[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+  .social-icon { display: inline-grid; place-items: center; width: 1.8rem; height: 1.8rem; border-radius: .5rem; background: #1d2b20; color: var(--gruen); font-size: 1rem; }
+  .haftung { flex-basis: 100%; width: 100%; border-top: 1px solid var(--linie); padding-top: 1rem; color: var(--leise); font-size: .85rem; text-align: center; }
 
   /* ---------- Einfache Seiten ---------- */
   .seite { padding: 4rem 0; max-width: 40rem; }
@@ -295,6 +309,17 @@
           </div>
         </div>
       </section>
+
+      <section class="weiterlernen" aria-labelledby="weiterlernen-titel">
+        <h3 id="weiterlernen-titel" data-i18n="fuss_folge">Folge uns</h3>
+        <p data-i18n="weiterlernen_text">Klicke auf einen Kanal, um weitere Lerninhalte zu entdecken.</p>
+        <div class="sozial">
+          <a data-link="instagram" target="_blank" rel="noopener" aria-label="Instagram"><span class="social-icon" aria-hidden="true">◎</span> Instagram</a>
+          <a data-link="youtube" target="_blank" rel="noopener" aria-label="YouTube"><span class="social-icon" aria-hidden="true">▶</span> YouTube</a>
+          <a data-link="tiktok" target="_blank" rel="noopener" aria-label="TikTok"><span class="social-icon" aria-hidden="true">♪</span> TikTok</a>
+          <a data-link="discord" target="_blank" rel="noopener" aria-label="Discord"><span class="social-icon" aria-hidden="true">◉</span> Discord</a>
+        </div>
+      </section>
     </div>
 
     <!-- About us -->
@@ -325,18 +350,14 @@
 
   <footer>
     <div class="huelle">
-      <div class="sozial">
-        <span data-i18n="fuss_folge"></span>
-        <a data-link="instagram" target="_blank" rel="noopener">Instagram</a>
-        <a data-link="youtube" target="_blank" rel="noopener">YouTube</a>
-        <a data-link="tiktok" target="_blank" rel="noopener">TikTok</a>
-      </div>
+
       <div class="fuss-rechts">
         <span class="sprache">
           <button type="button" data-lang="de" aria-pressed="false">Deutsch</button>|<button type="button" data-lang="en" aria-pressed="false">English</button>
         </span>
         <span>© 2026 TradoLearn</span>
       </div>
+      <div class="haftung" data-i18n="haftung">Keine Anlageberatung.</div>
     </div>
   </footer>
 
@@ -415,7 +436,7 @@
       about_text: 'Kommt bald …',
       support_text: 'Du hast eine Frage, einen Fehler gefunden oder eine Idee für TradoLearn? Komm auf unseren Discord-Server. Dort helfen wir dir weiter und du triffst andere, die Trading lernen.',
       support_discord: 'Discord beitreten',
-      fuss_folge: 'Folge uns',
+      fuss_folge: 'Weiterlernen', weiterlernen_text: 'Entdecke weitere Lerninhalte und Updates auf unseren Kanälen.', haftung: 'Keine Anlageberatung.',
       auth_email: 'E-Mail', auth_pw: 'Passwort', auth_abbrechen: 'Abbrechen',
       auth_login: 'Anmelden', auth_signup: 'Konto erstellen', auth_registrieren: 'Registrieren',
       auth_neu: 'Neu hier? Konto erstellen', auth_schon: 'Schon ein Konto? Anmelden',
@@ -465,7 +486,7 @@
       about_text: 'Coming soon …',
       support_text: 'Have a question, found a bug or got an idea for TradoLearn? Join our Discord server. We will help you there, and you can meet others who are learning trading.',
       support_discord: 'Join Discord',
-      fuss_folge: 'Follow us',
+      fuss_folge: 'Keep learning', weiterlernen_text: 'Discover more learning content and updates on our channels.', haftung: 'Not investment advice.',
       auth_email: 'Email', auth_pw: 'Password', auth_abbrechen: 'Cancel',
       auth_login: 'Sign in', auth_signup: 'Create account', auth_registrieren: 'Sign up',
       auth_neu: 'New here? Create account', auth_schon: 'Already have an account? Sign in',
