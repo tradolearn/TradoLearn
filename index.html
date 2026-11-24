@@ -33,12 +33,27 @@
   /* ---------- Hintergrund-Raster ---------- */
   .raster, .glanz { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
   .raster {
-    /* Leichtes, statisches Raster über die komplette Seite: keine Scroll-Repaints. */
+    /* Das Raster liegt auf einer eigenen Ebene; nur diese Ebene bewegt sich sehr langsam. */
+    overflow: hidden;
+    opacity: .9;
+    contain: strict;
+    isolation: isolate;
+  }
+  .raster::before {
+    content: "";
+    position: absolute;
+    inset: -56px;
     background-image:
       linear-gradient(rgba(74,168,104,.075) 1px, transparent 1px),
       linear-gradient(90deg, rgba(74,168,104,.075) 1px, transparent 1px);
     background-size: 56px 56px, 56px 56px;
-    opacity: .9;
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
+    animation: raster-drift 42s linear infinite;
+  }
+  @keyframes raster-drift {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(56px, 56px, 0); }
   }
   .glanz {
     /* Dezente Lichtflächen geben Tiefe, bleiben aber bewusst unbewegt. */
@@ -46,7 +61,7 @@
       radial-gradient(ellipse 62% 42% at 50% 0%, rgba(74,168,104,.12), transparent 72%),
       radial-gradient(ellipse 34% 28% at 92% 52%, rgba(74,168,104,.045), transparent 72%);
   }
-  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .raster::before { animation: none; transform: none; will-change: auto; } }
 
   .huelle { width: 100%; max-width: 72rem; margin: 0 auto; padding: 0 1.25rem; position: relative; z-index: 1; }
 
