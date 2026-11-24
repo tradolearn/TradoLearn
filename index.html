@@ -304,17 +304,42 @@
   .setup-textfeld { display:block; margin-top:1.2rem; color:var(--leise); }
   .setup-textfeld input { margin-top:.4rem; }
   .setup-hinweis { color:var(--leise); font-size:.88rem; margin:.6rem 0 0; }
-  body[data-theme="light"] { --bg:#f4f6f4; --flaeche:#ffffff; --flaeche-2:#edf1ed; --linie:#d8dfd8; --text:#172019; --leise:#59665c; }
-  body[data-theme="light"] .nav { background:rgba(244,246,244,.94); }
-  body[data-theme="light"] footer { background:rgba(255,255,255,.94); }
-  body[data-theme="light"] dialog::backdrop { background:rgba(20,30,22,.48); }
+  /* Einheitlicher Umschalter in der Kopfzeile */
+  .theme-toggle { display:inline-grid; place-items:center; width:2.55rem; height:2.55rem; flex:none; padding:0; border:1px solid var(--linie); border-radius:.7rem; background:var(--flaeche); color:var(--text); cursor:pointer; transition:background .18s ease,border-color .18s ease,transform .18s ease; }
+  .theme-toggle:hover { background:var(--flaeche-2); border-color:var(--gruen); transform:translateY(-1px); }
+  .theme-toggle:focus-visible { outline:3px solid var(--gruen); outline-offset:3px; }
+  .theme-icon { width:1.2rem; height:1.2rem; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+  .theme-icon-sun { display:none; }
+  body[data-theme="light"] { --bg:#f5f7f5; --flaeche:#ffffff; --flaeche-2:#edf2ee; --linie:#dce5dd; --text:#1a2820; --leise:#647268; --gruen:#2f9251; --gruen-dunkel:#267541; }
+  body[data-theme="light"] .theme-icon-moon { display:none; }
+  body[data-theme="light"] .theme-icon-sun { display:block; }
+  body[data-theme="light"] .nav { background:rgba(250,252,250,.96); box-shadow:0 4px 18px rgba(26,50,32,.045); }
+  body[data-theme="light"] footer { background:rgba(255,255,255,.96); }
+  body[data-theme="light"] .raster { opacity:.46; }
+  body[data-theme="light"] .raster::before { background-image:linear-gradient(rgba(47,146,81,.065) 1px, transparent 1px),linear-gradient(90deg,rgba(47,146,81,.065) 1px,transparent 1px); }
+  body[data-theme="light"] .glanz { background:radial-gradient(ellipse 62% 42% at 50% 0%,rgba(47,146,81,.065),transparent 72%),radial-gradient(ellipse 34% 28% at 92% 52%,rgba(47,146,81,.035),transparent 72%); }
+  body[data-theme="light"] .paket { box-shadow:0 8px 24px rgba(29,57,36,.035); }
+  body[data-theme="light"] .paket.premium { border-color:#cbdccc; background:linear-gradient(145deg,#fff 0%,#f0f7f1 100%); }
+  body[data-theme="light"] .premium-status { color:#45634c; border-color:#cbdccc; background:#f3f8f3; }
+  body[data-theme="light"] .premium .premium-merkmal { color:#526456; }
+  body[data-theme="light"] .sim { background:#fff; border-color:#dce5dd; box-shadow:0 12px 32px rgba(29,57,36,.07); }
+  body[data-theme="light"] canvas { background:#f7faf7; border-color:#dce5dd; }
+  body[data-theme="light"] .sim-toolbar { color:#637367; }
+  body[data-theme="light"] dialog { box-shadow:0 24px 80px rgba(20,40,25,.18); }
+  body[data-theme="light"] dialog::backdrop { background:rgba(20,30,22,.38); }
   body[data-theme="light"] .setup-option { background:rgba(20,30,22,.025); }
-  body[data-theme="light"] .option.richtig { background:#e3f5e8; }
-  body[data-theme="light"] .option.falsch { background:#f9e7e6; }
+  body[data-theme="light"] .setup-option:has(input:checked) { background:#edf7ef; }
+  body[data-theme="light"] .option.richtig { background:#e3f5e8; color:#173c24; }
+  body[data-theme="light"] .option.falsch { background:#f9e7e6; color:#652724; }
+  body[data-theme="light"] .avatar-platzhalter { background:linear-gradient(145deg,#d9eddd,#b5d8bd); color:#285538; }
+  body[data-theme="light"] .knopf.rot-rand:hover { background:#fff0ef; }
+  body[data-theme="light"] .sozial a { background:#fff; }
+  body[data-theme="light"] input, body[data-theme="light"] select { background:#fbfdfb; border-color:#d6e0d7; }
+  @media(max-width:760px) { .aktionen { gap:.55rem; } .theme-toggle { width:2.4rem;height:2.4rem; } }
   @media(max-width:520px) { .setup-options { grid-template-columns:1fr; } .setup-avatar-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 </style>
 </head>
-<body>
+<body data-theme="dark">
   <div class="raster" aria-hidden="true"></div>
   <div class="glanz" aria-hidden="true"></div>
 
@@ -327,6 +352,10 @@
         <a href="#lektion" data-seite="lektion" id="nav-lektion" data-i18n="nav_lektion" hidden></a>
       </nav>
       <div class="aktionen">
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Zum hellen Design wechseln" title="Zum hellen Design wechseln" aria-pressed="false">
+          <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.1A8.6 8.6 0 0 1 8.9 3.8 8.7 8.7 0 1 0 20.2 15.1Z"/></svg>
+          <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+        </button>
         <button class="text-knopf" id="nav-einstellungen" type="button" hidden>Einstellungen</button>
         <button class="text-knopf" id="nav-anmelden" type="button" data-i18n="nav_anmelden"></button>
         <button class="knopf" id="nav-start" type="button" data-i18n="nav_start"></button>
@@ -663,6 +692,7 @@
     lang = l;
     if (persist) { try { localStorage.setItem('tradolearn-lang', l); } catch (e) {} }
     applyLang();
+    if (typeof applyTheme === 'function') applyTheme(document.body.dataset.theme || 'dark');
     modus(registrieren);
     simAnzeige(); simMeldungText('');
     if (aktuelleSeite === 'lektion') starteLektion();
@@ -753,7 +783,28 @@
   ];
   const setupText = (de,en) => lang === 'de' ? de : en;
   function setupKey(){ return 'tradolearn-setup-' + (setupUserId || 'guest'); }
-  function applyTheme(theme){ document.body.dataset.theme = theme === 'light' ? 'light' : 'dark'; }
+  function applyTheme(theme){
+    const active = theme === 'light' ? 'light' : 'dark';
+    document.body.dataset.theme = active;
+    const toggle = $('theme-toggle');
+    if (toggle) {
+      const de = lang === 'de';
+      const label = active === 'dark' ? (de ? 'Zum hellen Design wechseln' : 'Switch to light appearance') : (de ? 'Zum dunklen Design wechseln' : 'Switch to dark appearance');
+      toggle.setAttribute('aria-label', label); toggle.title = label;
+      toggle.setAttribute('aria-pressed', String(active === 'light'));
+    }
+  }
+  try { applyTheme(localStorage.getItem('tradolearn-theme') || 'dark'); } catch(e) { applyTheme('dark'); }
+  $('theme-toggle').addEventListener('click', () => {
+    const next = document.body.dataset.theme === 'light' ? 'dark' : 'light';
+    applyTheme(next);
+    try { localStorage.setItem('tradolearn-theme', next); } catch(e) {}
+    // Falls die Einrichtung bereits abgeschlossen wurde, bleibt die Auswahl auch dort aktuell.
+    try {
+      const key = setupKey(); const saved = JSON.parse(localStorage.getItem(key) || 'null');
+      if (saved && saved.completed) { saved.theme = next; localStorage.setItem(key, JSON.stringify(saved)); }
+    } catch(e) {}
+  });
   function setupOpen(edit=false){
     setupEditing=edit; setupStep=0;
     try {
@@ -805,7 +856,7 @@
     }
     setupValues.username=username;
     try{localStorage.setItem(setupKey(),JSON.stringify({...setupValues,completed:true,updatedAt:new Date().toISOString()}));}catch(e){}
-    try{localStorage.setItem('tradolearn-lang',setupValues.language);}catch(e){}
+    try{localStorage.setItem('tradolearn-lang',setupValues.language);localStorage.setItem('tradolearn-theme',setupValues.theme);}catch(e){}
     setLang(setupValues.language, true); applyTheme(setupValues.theme);
     $('setup-fenster').close();
     if(!setupEditing) location.hash='#home';
@@ -839,14 +890,14 @@
   $('setup-fenster').addEventListener('click',e=>{ if(e.target===$('setup-fenster')&&!setupEditing)e.preventDefault(); });
   $('nav-einstellungen').addEventListener('click',()=>setupOpen(true));
 
-  db.auth.getSession().then(({ data }) => { aktualisiere(data.session); bereit = true; route(); if(data.session){setupUserId=data.session.user.id;try{const saved=JSON.parse(localStorage.getItem(setupKey())||'null');if(saved&&saved.completed&&saved.username&&saved.avatar&&saved.theme&&saved.level){if(saved.language==='de'||saved.language==='en')setLang(saved.language,true);applyTheme(saved.theme||'dark');}else{setupValues={...setupDefaults};setupOpen(false);}}catch(e){setupOpen(false);}} });
+  db.auth.getSession().then(({ data }) => { aktualisiere(data.session); bereit = true; route(); if(data.session){setupUserId=data.session.user.id;try{const saved=JSON.parse(localStorage.getItem(setupKey())||'null');if(saved&&saved.completed&&saved.username&&saved.avatar&&saved.theme&&saved.level){if(saved.language==='de'||saved.language==='en')setLang(saved.language,true);applyTheme(saved.theme||'dark');try{localStorage.setItem('tradolearn-theme',saved.theme||'dark');}catch(e){}}else{setupValues={...setupDefaults};setupOpen(false);}}catch(e){setupOpen(false);}} });
   db.auth.onAuthStateChange((_ereignis, session) => {
     const war = eingeloggt;
     aktualisiere(session);
     if (session && !war && bereit) {
       $('anmelde-fenster').close(); setupUserId=session.user.id;
       let done=false;try{const saved=JSON.parse(localStorage.getItem(setupKey())||'null');done=!!(saved?.completed&&saved.username&&saved.avatar&&saved.theme&&saved.level);}catch(e){}
-      if(!done) setupOpen(false); else { try { const saved=JSON.parse(localStorage.getItem(setupKey())||'null'); if(saved?.language) setLang(saved.language,true); applyTheme(saved?.theme||'dark'); } catch(e){} location.hash='#home'; }
+      if(!done) setupOpen(false); else { try { const saved=JSON.parse(localStorage.getItem(setupKey())||'null'); if(saved?.language) setLang(saved.language,true); applyTheme(saved?.theme||'dark');try{localStorage.setItem('tradolearn-theme',saved?.theme||'dark');}catch(e){} } catch(e){} location.hash='#home'; }
     }
     if(!session){setupUserId=null;}
   });
