@@ -278,6 +278,18 @@
   .setup-textfeld { display:block; margin-top:1.2rem; color:var(--leise); }
   .setup-textfeld input { margin-top:.4rem; }
   .setup-hinweis { color:var(--leise); font-size:.88rem; margin:.6rem 0 0; }
+  #settings-fenster { width:min(94vw,42rem); max-height:90vh; overflow-y:auto; padding:clamp(1.1rem,3vw,2rem); }
+  .settings-liste { display:grid; gap:.75rem; margin:1rem 0 1.5rem; }
+  .settings-zeile { display:grid; grid-template-columns:minmax(9rem,1fr) minmax(12rem,1.25fr); gap:1rem; align-items:center; padding:1rem; border:1px solid var(--linie); border-radius:.75rem; background:var(--flaeche-2); }
+  .settings-zeile strong { display:block; }
+  .settings-zeile small { display:block; color:var(--leise); margin-top:.15rem; }
+  .settings-zeile select,.settings-zeile input { margin:0; width:100%; font:inherit; color:var(--text); background:var(--bg); border:1px solid var(--linie); border-radius:.5rem; padding:.65rem .75rem; }
+  .settings-avatar { display:flex; gap:.45rem; flex-wrap:wrap; }
+  .settings-avatar button { width:2.8rem; height:2.8rem; border-radius:50%; border:1px solid var(--linie); background:var(--bg); color:var(--text); cursor:pointer; font-size:1.15rem; }
+  .settings-avatar button[aria-pressed="true"] { border:2px solid var(--gruen); background:rgba(74,168,104,.14); }
+  .settings-gefahr { border-top:1px solid var(--linie); padding-top:1.2rem; margin-top:1.3rem; }
+  .settings-status { min-height:1.4rem; color:var(--leise); font-size:.9rem; }
+  @media(max-width:560px) { .settings-zeile { grid-template-columns:1fr; gap:.55rem; } }
   /* Einheitlicher Umschalter in der Kopfzeile */
   .theme-toggle { display:inline-grid; place-items:center; width:2.55rem; height:2.55rem; flex:none; padding:0; border:1px solid var(--linie); border-radius:.7rem; background:var(--flaeche); color:var(--text); cursor:pointer; transition:background .18s ease,border-color .18s ease,transform .18s ease; }
   .theme-toggle:hover { background:var(--flaeche-2); border-color:var(--gruen); transform:translateY(-1px); }
@@ -494,6 +506,21 @@
     <p class="setup-intro" id="setup-beschreibung"></p>
     <div id="setup-inhalt"></div>
     <div class="setup-actions"><button class="knopf rand" id="setup-zurueck" type="button">Zurück</button><div><button class="knopf" id="setup-weiter" type="button">Weiter</button></div></div>
+  </dialog>
+
+  <dialog id="settings-fenster" aria-labelledby="settings-titel">
+    <div class="setup-kopf"><span id="settings-label">TRADOLEARN</span><button class="klein" id="settings-schliessen" type="button">Schließen</button></div>
+    <h2 id="settings-titel">Einstellungen</h2>
+    <p class="setup-intro" id="settings-beschreibung"></p>
+    <div id="settings-inhalt" class="settings-liste"></div>
+    <p id="settings-status" class="settings-status" role="status"></p>
+    <div class="dialog-zeile"><button class="knopf rand" id="settings-abbrechen" type="button">Abbrechen</button><button class="knopf" id="settings-speichern" type="button">Änderungen speichern</button></div>
+    <div class="settings-gefahr">
+      <h3 id="settings-reset-titel"></h3><p class="setup-hinweis" id="settings-reset-text"></p>
+      <button class="knopf rand" id="settings-reset" type="button"></button>
+      <h3 id="settings-delete-titel" style="margin-top:1.2rem"></h3><p class="setup-hinweis" id="settings-delete-text"></p>
+      <button class="knopf rot-rand" id="settings-delete" type="button"></button>
+    </div>
   </dialog>
 
   <!-- Anmelden / Registrieren -->
@@ -785,24 +812,88 @@
       if (saved && saved.completed) { saved.theme = next; localStorage.setItem(key, JSON.stringify(saved)); }
     } catch(e) {}
   });
+  let settingsDraft = null;
+  const settingsAvatarChoices = [['avatar1','✦'],['avatar2','◈'],['avatar3','●'],['avatar4','▲'],['avatar5','☾'],['avatar6','✳']];
+  function settingsRender(){
+    const de=lang==='de', v=settingsDraft||{...setupDefaults};
+    $('settings-titel').textContent=de?'Einstellungen':'Settings';
+    $('settings-beschreibung').textContent=de?'Hier findest du alle Einstellungen untereinander. Deine Änderungen werden erst beim Speichern übernommen.':'All settings are listed here. Your changes are applied when you save.';
+    $('settings-schliessen').textContent=de?'Schließen':'Close'; $('settings-abbrechen').textContent=de?'Abbrechen':'Cancel'; $('settings-speichern').textContent=de?'Änderungen speichern':'Save changes';
+    $('settings-reset-titel').textContent=de?'Einstellungen zurücksetzen':'Reset settings';
+    $('settings-reset-text').textContent=de?'Du gehst Sprache, Design und Trading-Erfahrung erneut durch. Benutzername und Profilbild bleiben erhalten.':'You will go through language, appearance and trading experience again. Your username and profile picture will stay unchanged.';
+    $('settings-reset').textContent=de?'Einstellungen erneut durchgehen':'Go through settings again';
+    $('settings-delete-titel').textContent=de?'Account löschen':'Delete account';
+    $('settings-delete-text').textContent=de?'Das Löschen ist endgültig. Du wirst vor dem letzten Schritt noch einmal gefragt.':'Account deletion is permanent. You will be asked to confirm before the final step.';
+    $('settings-delete').textContent=de?'Account endgültig löschen':'Permanently delete account';
+    const row=(title,desc,control)=>`<div class="settings-zeile"><div><strong>${title}</strong><small>${desc}</small></div><div>${control}</div></div>`;
+    $('settings-inhalt').innerHTML =
+      row(de?'Sprache':'Language',de?'Sprache der Website':'Website language',`<select id="pref-language"><option value="de" ${v.language==='de'?'selected':''}>Deutsch</option><option value="en" ${v.language==='en'?'selected':''}>English</option></select>`)+
+      row(de?'Design':'Appearance',de?'Helles oder dunkles Design':'Light or dark appearance',`<select id="pref-theme"><option value="light" ${v.theme==='light'?'selected':''}>${de?'Hell':'Light'}</option><option value="dark" ${v.theme==='dark'?'selected':''}>${de?'Dunkel':'Dark'}</option></select>`)+
+      row(de?'Trading-Erfahrung':'Trading experience',de?'Nur für die Statistik':'For statistics only',`<select id="pref-level"><option value="anfaenger" ${v.level==='anfaenger'?'selected':''}>${de?'Anfänger':'Beginner'}</option><option value="beschaeftigt" ${v.level==='beschaeftigt'?'selected':''}>${de?'Schon damit beschäftigt':'Some experience'}</option><option value="pro" ${v.level==='pro'?'selected':''}>${de?'Fortgeschritten / Profi':'Advanced / Pro'}</option></select>`)+
+      row(de?'Benutzername':'Username',de?'3–20 Zeichen':'3–20 characters',`<input id="pref-username" maxlength="20" minlength="3" value="${String(v.username||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}">`)+
+      row(de?'Profilbild':'Profile picture',de?'Platzhalter – richtige Bilder folgen':'Placeholder images for now',`<div class="settings-avatar">${settingsAvatarChoices.map(([id,sym])=>`<button type="button" data-pref-avatar="${id}" aria-label="${de?'Profilbild':'Avatar'} ${id.slice(-1)}" aria-pressed="${v.avatar===id}">${sym}</button>`).join('')}</div>`);
+    $('settings-inhalt').querySelectorAll('[data-pref-avatar]').forEach(b=>b.addEventListener('click',()=>{settingsDraft.avatar=b.dataset.prefAvatar;$('settings-inhalt').querySelectorAll('[data-pref-avatar]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));}));
+    $('settings-status').textContent='';
+  }
+  function settingsOpen(){
+    try { settingsDraft={...setupDefaults,...JSON.parse(localStorage.getItem(setupKey())||'{}')}; } catch(e){settingsDraft={...setupDefaults};}
+    settingsDraft.language=lang; settingsDraft.theme=document.body.dataset.theme||settingsDraft.theme||'dark';
+    settingsRender(); if(!$('settings-fenster').open)$('settings-fenster').showModal();
+  }
+  function settingsSave(){
+    const de=lang==='de';
+    const username=$('pref-username').value.trim();
+    if(username.length<3||username.length>20||!/^[\p{L}\p{N}_]+$/u.test(username)){
+      $('settings-status').textContent=de?'Bitte einen Benutzernamen mit 3–20 Buchstaben, Zahlen oder Unterstrichen eingeben.':'Enter a username with 3–20 letters, numbers or underscores.'; $('pref-username').focus(); return;
+    }
+    settingsDraft.language=$('pref-language').value; settingsDraft.theme=$('pref-theme').value; settingsDraft.level=$('pref-level').value; settingsDraft.username=username;
+    try { const old=JSON.parse(localStorage.getItem(setupKey())||'{}'); localStorage.setItem(setupKey(),JSON.stringify({...old,...settingsDraft,completed:true,updatedAt:new Date().toISOString()})); localStorage.setItem('tradolearn-lang',settingsDraft.language); localStorage.setItem('tradolearn-theme',settingsDraft.theme); } catch(e) {}
+    setLang(settingsDraft.language,true); applyTheme(settingsDraft.theme); $('settings-fenster').close();
+  }
+  $('settings-speichern').addEventListener('click',settingsSave);
+  $('settings-schliessen').addEventListener('click',()=>$('settings-fenster').close());
+  $('settings-abbrechen').addEventListener('click',()=>$('settings-fenster').close());
+  $('settings-reset').addEventListener('click',()=>{
+    const de=lang==='de';
+    if(!confirm(de?'Sprache, Design und Trading-Erfahrung erneut einstellen? Benutzername und Profilbild bleiben erhalten.':'Go through language, appearance and trading experience again? Your username and profile picture will stay unchanged.'))return;
+    $('settings-fenster').close(); setupResetMode=true; setupOpen(false);
+  });
+  $('settings-delete').addEventListener('click',async()=>{
+    const de=lang==='de';
+    if(!confirm(de?'Möchtest du deinen Account wirklich endgültig löschen? Diese Aktion kann nicht rückgängig gemacht werden.':'Are you sure you want to permanently delete your account? This cannot be undone.'))return;
+    const second=prompt(de?'Zur Bestätigung bitte DELETE eingeben.':'Type DELETE to confirm.');
+    if(second!=='DELETE'){ $('settings-status').textContent=de?'Löschen abgebrochen.':'Deletion cancelled.'; return; }
+    $('settings-delete').disabled=true; $('settings-status').textContent=de?'Account wird gelöscht …':'Deleting account …';
+    try {
+      const {error}=await db.functions.invoke('delete-account');
+      if(error) throw error;
+      try{localStorage.removeItem(setupKey());}catch(e){}
+      await db.auth.signOut(); $('settings-fenster').close(); location.hash='#home';
+    } catch(e) {
+      $('settings-status').textContent=de?'Der Account-Löschdienst ist noch nicht eingerichtet. Bitte richte in Supabase eine sichere Edge Function „delete-account“ ein. Dein Account wurde nicht gelöscht.':'The account deletion service is not configured yet. Set up a secure Supabase Edge Function named “delete-account”. Your account was not deleted.';
+    } finally { $('settings-delete').disabled=false; }
+  });
+
+  let setupResetMode = false;
+  function currentSetupSteps(){ return setupResetMode ? setupSteps.filter(s=>['welcome','language','theme','level'].includes(s.type)) : setupSteps; }
   function setupOpen(edit=false){
     setupEditing=edit; setupStep=0;
     try {
       const saved=JSON.parse(localStorage.getItem(setupKey())||'null');
       setupOriginal = saved ? {...setupDefaults,...saved} : {...setupDefaults};
-      setupValues = edit && saved ? {...setupDefaults,...saved} : {...setupDefaults};
+      setupValues = (edit || setupResetMode) && saved ? {...setupDefaults,...saved} : {...setupDefaults};
       if (!edit) { setupValues.language = lang; setupValues.theme = document.body.dataset.theme || 'dark'; }
     } catch(e){ setupOriginal={...setupDefaults}; setupValues={...setupDefaults}; }
     $('setup-schliessen').hidden = !edit;
     setupRender(); if(!$('setup-fenster').open) $('setup-fenster').showModal();
   }
   function setupRender(){
-    const step=setupSteps[setupStep], de=lang==='de';
-    $('setup-label').textContent=setupText('EINRICHTUNG · SCHRITT '+(setupStep+1)+' VON '+setupSteps.length,'SETUP · STEP '+(setupStep+1)+' OF '+setupSteps.length);
+    const steps=currentSetupSteps(); const step=steps[setupStep], de=lang==='de';
+    $('setup-label').textContent=setupText('EINRICHTUNG · SCHRITT '+(setupStep+1)+' VON '+steps.length,'SETUP · STEP '+(setupStep+1)+' OF '+steps.length);
     $('setup-titel').textContent=step.title[lang]; $('setup-beschreibung').textContent=step.desc[lang];
-    $('setup-fortschritt').style.width=((setupStep+1)/setupSteps.length*100)+'%';
+    $('setup-fortschritt').style.width=((setupStep+1)/steps.length*100)+'%';
     $('setup-zurueck').hidden=setupStep===0;
-    $('setup-weiter').textContent=setupStep===setupSteps.length-1?setupText('Fertigstellen','Finish'):setupText('Weiter','Next');
+    $('setup-weiter').textContent=setupStep===steps.length-1?setupText('Fertigstellen','Finish'):setupText('Weiter','Next');
     const option=(name,value,title,desc,checked,type='radio')=>`<label class="setup-option"><input type="${type}" name="${name}" value="${value}" ${checked?'checked':''}><span><strong>${title}</strong>${desc?`<small>${desc}</small>`:''}</span></label>`;
     let html='';
     if(step.type==='welcome') html=`<div class="setup-tour"><article><strong>${de?'Deine Auswahl bleibt flexibel':'Your choices stay flexible'}</strong><span>${de?'Du kannst Sprache, Design, Benutzernamen und Profilbild später jederzeit ändern.':'You can change your language, appearance, username and profile picture at any time.'}</span></article></div>`;
@@ -829,20 +920,22 @@
   }
   function setupSave(){
     const username=(setupValues.username||'').trim();
-    if(username.length<3 || username.length>20 || !/^[\p{L}\p{N}_]+$/u.test(username)){
+    if(!setupResetMode && (username.length<3 || username.length>20 || !/^[\p{L}\p{N}_]+$/u.test(username))){
       setupStep=4; setupRender();
       const input=$('setup-username'); if(input){input.setCustomValidity(setupText('Bitte 3–20 Zeichen verwenden (Buchstaben, Zahlen, Unterstriche).','Use 3–20 characters (letters, numbers, underscores).'));input.reportValidity();input.focus();}
       return;
     }
-    setupValues.username=username;
-    try{localStorage.setItem(setupKey(),JSON.stringify({...setupValues,completed:true,updatedAt:new Date().toISOString()}));}catch(e){}
+    if(!setupResetMode) setupValues.username=username;
+    let prior={}; try{prior=JSON.parse(localStorage.getItem(setupKey())||'{}');}catch(e){}
+    const finalValues=setupResetMode?{...prior,...setupValues,username:prior.username||'',avatar:prior.avatar||'avatar1'}:setupValues;
+    try{localStorage.setItem(setupKey(),JSON.stringify({...finalValues,completed:true,updatedAt:new Date().toISOString()}));}catch(e){}
     try{localStorage.setItem('tradolearn-lang',setupValues.language);localStorage.setItem('tradolearn-theme',setupValues.theme);}catch(e){}
     setLang(setupValues.language, true); applyTheme(setupValues.theme);
-    $('setup-fenster').close();
+    $('setup-fenster').close(); setupResetMode=false;
     if(!setupEditing) location.hash='#home';
   }
   $('setup-weiter').addEventListener('click',()=>{
-    const step=setupSteps[setupStep];
+    const step=currentSetupSteps()[setupStep];
     if(step.type==='language'||step.type==='theme'||step.type==='level'){
       const chosen=$('setup-inhalt').querySelector(`input[name="${step.type}"]:checked`);
       if(!chosen){const first=$('setup-inhalt').querySelector(`input[name="${step.type}"]`);if(first){first.focus();first.reportValidity();}return;}
@@ -856,7 +949,7 @@
       }
       setupValues.username=value;
     }
-    if(setupStep===setupSteps.length-1){setupSave();return;}
+    if(setupStep===currentSetupSteps().length-1){setupSave();return;}
     setupStep++;setupRender();
   });
   $('setup-zurueck').addEventListener('click',()=>{if(setupStep>0){setupStep--;setupRender();}});
@@ -868,7 +961,7 @@
   });
   $('setup-fenster').addEventListener('cancel',e=>{ if(!setupEditing)e.preventDefault(); });
   $('setup-fenster').addEventListener('click',e=>{ if(e.target===$('setup-fenster')&&!setupEditing)e.preventDefault(); });
-  $('nav-einstellungen').addEventListener('click',()=>setupOpen(true));
+  $('nav-einstellungen').addEventListener('click',settingsOpen);
 
   db.auth.getSession().then(({ data }) => { aktualisiere(data.session); bereit = true; route(); if(data.session){setupUserId=data.session.user.id;try{const saved=JSON.parse(localStorage.getItem(setupKey())||'null');if(saved&&saved.completed&&saved.username&&saved.avatar&&saved.theme&&saved.level){if(saved.language==='de'||saved.language==='en')setLang(saved.language,true);applyTheme(saved.theme||'dark');try{localStorage.setItem('tradolearn-theme',saved.theme||'dark');}catch(e){}}else{setupValues={...setupDefaults};setupOpen(false);}}catch(e){setupOpen(false);}} });
   db.auth.onAuthStateChange((_ereignis, session) => {
