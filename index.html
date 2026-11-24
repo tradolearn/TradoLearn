@@ -207,6 +207,18 @@
   @media (prefers-reduced-motion: reduce) { .scroll-reveal { opacity: 1; transform: none; filter: none; transition: none; } .paket, .sozial a { transition: none; } }
   .haftung { flex-basis: 100%; width: 100%; border-top: 1px solid var(--linie); padding-top: 1rem; color: var(--leise); font-size: .85rem; text-align: center; }
 
+
+  .sim-sektion { padding-top: 1.5rem; padding-bottom: 2.5rem; }
+  .sim-toolbar { display:flex; align-items:center; gap:.55rem; margin-bottom:1rem; min-height:1.5rem; }
+  .sim-live-dot { width:.48rem; height:.48rem; flex:none; border-radius:50%; background:#62d889; box-shadow:0 0 12px rgba(98,216,137,.5); }
+  .sim-toolbar-title { font-size:.76rem; font-weight:800; letter-spacing:.16em; color:var(--text); }
+  .sim-toolbar-tag { margin-left:auto; font-size:.65rem; letter-spacing:.1em; color:#8da996; border:1px solid rgba(98,216,137,.2); border-radius:999px; padding:.3rem .55rem; }
+  .sim { box-shadow: 0 12px 36px rgba(0,0,0,.22), 0 0 28px rgba(74,168,104,.07); }
+  #chart { height:clamp(230px, 36vw, 330px); }
+  .sim .knopf { min-height:2.8rem; }
+  .sim select { min-height:2.8rem; }
+  @media (max-width:560px) { .sim-toolbar-tag { font-size:.58rem; } .sim-knoepfe { grid-template-columns:1fr 1fr; } }
+
   /* ---------- Einfache Seiten ---------- */
   .seite { padding: 4rem 0; max-width: 40rem; }
   .seite h1 { font-size: clamp(2rem, 5vw, 3rem); }
@@ -285,19 +297,37 @@
           </div>
         </div>
 
-        <div class="sim" id="simulator">
-          <div class="sim-kopf">
-            <span class="stier" aria-hidden="true">🐂</span>
-            <div class="sprechblase">
-              <p data-i18n="sim_intro"></p>
-              <p data-i18n="sim_s1"></p>
-              <p data-i18n="sim_s2"></p>
-              <p data-i18n="sim_s3"></p>
-              <p data-i18n="sim_s4"></p>
-            </div>
+
+      </section>
+
+      <section class="sektion" id="angebot">
+        <h2 data-i18n="off_titel"></h2>
+        <p class="untertitel" data-i18n="off_sub"></p>
+        <div class="angebot">
+          <div class="paket">
+            <span class="etikett" data-i18n="off_free"></span>
+            <ul>
+              <li data-i18n="off_f1"></li>
+              <li data-i18n="off_f2"></li>
+              <li data-i18n="off_f3"></li>
+            </ul>
           </div>
+          <div class="paket premium">
+            <span class="etikett" data-i18n="off_prem"></span>
+            <ul>
+              <li data-i18n="off_p1"></li>
+              <li data-i18n="off_p2"></li>
+              <li data-i18n="off_p3"></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="sektion sim-sektion" aria-label="Trading Simulator">
+        <div class="sim" id="simulator">
+          <div class="sim-toolbar"><span class="sim-live-dot" aria-hidden="true"></span><span class="sim-toolbar-title">TRADOLEARN</span><span class="sim-toolbar-tag">PAPER TRADING</span></div>
           <canvas id="chart" aria-label="Kerzen-Chart"></canvas>
-          <p class="legende" data-i18n="sim_legende"></p>
           <div class="chips">
             <span class="chip"><span data-i18n="sim_geld"></span>: <b id="v-geld"></b></span>
             <span class="chip"><span data-i18n="sim_kurs"></span>: <b id="v-kurs"></b></span>
@@ -327,29 +357,6 @@
             <button class="knopf rot-rand voll" id="b-verkaufen" type="button" data-i18n="sim_verkaufen" hidden></button>
           </div>
           <p class="sim-meldung" id="sim-meldung" role="status"></p>
-        </div>
-      </section>
-
-      <section class="sektion" id="angebot">
-        <h2 data-i18n="off_titel"></h2>
-        <p class="untertitel" data-i18n="off_sub"></p>
-        <div class="angebot">
-          <div class="paket">
-            <span class="etikett" data-i18n="off_free"></span>
-            <ul>
-              <li data-i18n="off_f1"></li>
-              <li data-i18n="off_f2"></li>
-              <li data-i18n="off_f3"></li>
-            </ul>
-          </div>
-          <div class="paket premium">
-            <span class="etikett" data-i18n="off_prem"></span>
-            <ul>
-              <li data-i18n="off_p1"></li>
-              <li data-i18n="off_p2"></li>
-              <li data-i18n="off_p3"></li>
-            </ul>
-          </div>
         </div>
       </section>
 
