@@ -154,14 +154,24 @@
   .chips { display: grid; grid-template-columns: repeat(auto-fit, minmax(125px, 1fr)); gap: .65rem; }
   .chip { padding: .7rem .8rem; border-radius: .7rem; }
   .auswahl { margin-top: 1rem; }
-  .weiterlernen { margin: 1.5rem 0 0; padding: 1.4rem; background: var(--flaeche); border: 1px solid var(--linie); border-radius: 1rem; }
-  .weiterlernen h3 { margin: 0 0 .35rem; }
-  .weiterlernen p { color: var(--leise); margin: 0 0 1rem; }
-  .sozial { display: flex; flex-wrap: wrap; gap: .8rem; }
-  .sozial a { display: inline-flex; align-items: center; justify-content: center; gap: .55rem; min-width: 9rem; color: var(--text); text-decoration: none; font-weight: 700; border: 1px solid var(--linie); border-radius: .8rem; padding: .8rem 1rem; background: var(--bg); transition: border-color .15s, transform .15s, background .15s; }
-  .sozial a:hover:not([aria-disabled="true"]) { border-color: var(--gruen); color: var(--gruen); transform: translateY(-2px); background: #111a13; }
-  .sozial a[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
-  .social-icon { display: inline-grid; place-items: center; width: 1.8rem; height: 1.8rem; border-radius: .5rem; background: #1d2b20; color: var(--gruen); font-size: 1rem; }
+  /* Runde Social-Icons statt eines großen "Weiterlernen"-Kastens */
+  .weiterlernen { display: flex; justify-content: center; margin: 2rem auto 0; padding: 1.2rem 0; }
+  .sozial { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; }
+  .sozial a { display: grid; place-items: center; width: 3.7rem; height: 3.7rem; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; color: white; text-decoration: none; background: linear-gradient(145deg, #1b211c, #101210); box-shadow: 0 8px 24px rgba(0,0,0,.24); transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease, opacity .2s ease; }
+  .sozial a:hover:not([aria-disabled="true"]) { transform: translateY(-5px) scale(1.06); border-color: var(--gruen); box-shadow: 0 12px 30px rgba(74,168,104,.22); }
+  .sozial a[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+  .social-icon { display: grid; place-items: center; width: 1.7rem; height: 1.7rem; }
+  .social-icon svg { display: block; width: 100%; height: 100%; fill: currentColor; }
+
+  /* Scroll-Story: Inhalte kommen beim Scrollen weich ins Bild */
+  .scroll-reveal { opacity: 0; transform: translateY(34px) scale(.985); filter: blur(3px); transition: opacity .75s ease, transform .75s cubic-bezier(.2,.7,.2,1), filter .75s ease; }
+  .scroll-reveal.is-visible { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  .scroll-reveal[data-reveal-delay="1"] { transition-delay: .08s; }
+  .scroll-reveal[data-reveal-delay="2"] { transition-delay: .16s; }
+  .scroll-reveal[data-reveal-delay="3"] { transition-delay: .24s; }
+  .paket { transition: border-color .3s ease, box-shadow .3s ease, transform .3s ease; }
+  .paket:hover { transform: translateY(-3px); box-shadow: 0 18px 38px rgba(0,0,0,.2); }
+  @media (prefers-reduced-motion: reduce) { .scroll-reveal { opacity: 1; transform: none; filter: none; transition: none; } .paket, .sozial a { transition: none; } }
   .haftung { flex-basis: 100%; width: 100%; border-top: 1px solid var(--linie); padding-top: 1rem; color: var(--leise); font-size: .85rem; text-align: center; }
 
   /* ---------- Einfache Seiten ---------- */
@@ -310,14 +320,11 @@
         </div>
       </section>
 
-      <section class="weiterlernen" aria-labelledby="weiterlernen-titel">
-        <h3 id="weiterlernen-titel" data-i18n="fuss_folge">Folge uns</h3>
-        <p data-i18n="weiterlernen_text">Klicke auf einen Kanal, um weitere Lerninhalte zu entdecken.</p>
+      <section class="weiterlernen" aria-label="Social Media">
         <div class="sozial">
-          <a data-link="instagram" target="_blank" rel="noopener" aria-label="Instagram"><span class="social-icon" aria-hidden="true">◎</span> Instagram</a>
-          <a data-link="youtube" target="_blank" rel="noopener" aria-label="YouTube"><span class="social-icon" aria-hidden="true">▶</span> YouTube</a>
-          <a data-link="tiktok" target="_blank" rel="noopener" aria-label="TikTok"><span class="social-icon" aria-hidden="true">♪</span> TikTok</a>
-          <a data-link="discord" target="_blank" rel="noopener" aria-label="Discord"><span class="social-icon" aria-hidden="true">◉</span> Discord</a>
+          <a data-link="instagram" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><span class="social-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2.2A2.8 2.8 0 0 0 4.2 7v10A2.8 2.8 0 0 0 7 19.8h10a2.8 2.8 0 0 0 2.8-2.8V7A2.8 2.8 0 0 0 17 4.2H7zm5 2.3a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11zm0 2.2a3.3 3.3 0 1 0 0 6.6 3.3 3.3 0 0 0 0-6.6zm5.8-3.2a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6z"/></svg></span></a>
+          <a data-link="youtube" target="_blank" rel="noopener" aria-label="YouTube" title="YouTube"><span class="social-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg></span></a>
+          <a data-link="tiktok" target="_blank" rel="noopener" aria-label="TikTok" title="TikTok"><span class="social-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19.6 7.2a6.9 6.9 0 0 1-4.2-1.4v8.1a6.1 6.1 0 1 1-6.1-6.1c.4 0 .8 0 1.2.1v3.3a2.8 2.8 0 1 0 1.6 2.5V2h3.3a6.8 6.8 0 0 0 4.2 4.1v1.1z"/></svg></span></a>
         </div>
       </section>
     </div>
@@ -558,6 +565,28 @@
   window.addEventListener('hashchange', route);
 
   $('hero-mehr').addEventListener('click', () => $('angebot').scrollIntoView({ behavior: 'smooth' }));
+
+  /* Scroll-Effekte: Elemente erscheinen beim Erreichen des sichtbaren Bereichs. */
+  (() => {
+    const targets = document.querySelectorAll('.hero, .sim, #angebot h2, #angebot .untertitel, .paket, .weiterlernen, .seite, .lektion-box');
+    targets.forEach((el, i) => {
+      el.classList.add('scroll-reveal');
+      if (el.classList.contains('paket')) el.dataset.revealDelay = String((i % 3) + 1);
+    });
+    if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -45px 0px' });
+      targets.forEach(el => observer.observe(el));
+    } else {
+      targets.forEach(el => el.classList.add('is-visible'));
+    }
+  })();
 
   /* ======================= Anmeldung ======================= */
   let registrieren = false;
