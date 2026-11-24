@@ -279,6 +279,24 @@
   .meldung.ok { color: var(--gruen); }
   .dialog-zeile { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
   .sprach-knoepfe { display: grid; gap: .8rem; margin-top: 1rem; }
+  #setup-fenster { width: min(94vw, 42rem); max-height: 90vh; overflow-y: auto; padding: clamp(1.1rem,3vw,2rem); }
+  .setup-kopf { display:flex; align-items:center; justify-content:space-between; gap:1rem; color:var(--leise); font-size:.86rem; margin-bottom:1rem; }
+  .setup-track { height:3px; background:var(--linie); border-radius:9px; overflow:hidden; margin-bottom:1.6rem; }
+  .setup-track span { display:block; height:100%; width:20%; background:var(--gruen); transition:width .2s ease; }
+  .setup-intro { color:var(--leise); margin-top:-.4rem; }
+  .setup-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.7rem; margin:1.2rem 0; }
+  .setup-option { display:flex; align-items:flex-start; gap:.65rem; padding:.9rem; border:1px solid var(--linie); border-radius:.7rem; cursor:pointer; background:rgba(255,255,255,.015); }
+  .setup-option:has(input:checked) { border-color:var(--gruen); background:rgba(74,168,104,.09); }
+  .setup-option input { width:auto; margin:.2rem 0 0; accent-color:var(--gruen); }
+  .setup-option strong { display:block; color:var(--text); }
+  .setup-option small { display:block; color:var(--leise); line-height:1.4; margin-top:.15rem; }
+  .setup-actions { display:flex; justify-content:space-between; align-items:center; gap:.8rem; flex-wrap:wrap; margin-top:1.5rem; }
+  .setup-actions > div { display:flex; gap:.6rem; }
+  .setup-tour { display:grid; gap:.7rem; margin-top:1rem; }
+  .setup-tour article { border:1px solid var(--linie); border-radius:.65rem; padding:.85rem 1rem; }
+  .setup-tour article strong { display:block; margin-bottom:.15rem; }
+  .setup-tour article span { color:var(--leise); font-size:.93rem; }
+  @media(max-width:520px) { .setup-options { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
@@ -294,6 +312,7 @@
         <a href="#lektion" data-seite="lektion" id="nav-lektion" data-i18n="nav_lektion" hidden></a>
       </nav>
       <div class="aktionen">
+        <button class="text-knopf" id="nav-einstellungen" type="button" hidden>Einstellungen</button>
         <button class="text-knopf" id="nav-anmelden" type="button" data-i18n="nav_anmelden"></button>
         <button class="knopf" id="nav-start" type="button" data-i18n="nav_start"></button>
       </div>
@@ -450,6 +469,16 @@
       <button class="knopf gross" type="button" data-wahl="de">Deutsch</button>
       <button class="knopf gross rand" type="button" data-wahl="en">English</button>
     </div>
+  </dialog>
+
+  <!-- Schrittweise Einrichtung; später jederzeit über Einstellungen erneut erreichbar -->
+  <dialog id="setup-fenster" aria-labelledby="setup-titel">
+    <div class="setup-kopf"><span id="setup-label">DEIN START</span><button class="klein" id="setup-schliessen" type="button">Später</button></div>
+    <div class="setup-track"><span id="setup-fortschritt"></span></div>
+    <h2 id="setup-titel">Richte TradoLearn für dich ein.</h2>
+    <p class="setup-intro" id="setup-beschreibung"></p>
+    <div id="setup-inhalt"></div>
+    <div class="setup-actions"><button class="knopf rand" id="setup-zurueck" type="button">Zurück</button><div><button class="knopf rand" id="setup-ueberspringen" type="button">Überspringen</button><button class="knopf" id="setup-weiter" type="button">Weiter</button></div></div>
   </dialog>
 
   <!-- Anmelden / Registrieren -->
@@ -684,6 +713,8 @@
   function aktualisiere(session) {
     eingeloggt = !!session;
     $('nav-lektion').hidden = !eingeloggt;
+    $('nav-einstellungen').hidden = !eingeloggt;
+    $('nav-einstellungen').textContent = lang === 'de' ? 'Einstellungen' : 'Settings';
     $('nav-anmelden').dataset.i18n = eingeloggt ? 'nav_abmelden' : 'nav_anmelden';
     $('nav-start').dataset.i18n = eingeloggt ? 'nav_zur_lektion' : 'nav_start';
     $('hero-start').dataset.i18n = eingeloggt ? 'nav_zur_lektion' : 'nav_start';
@@ -691,14 +722,67 @@
     if (bereit) route();
   }
 
-  db.auth.getSession().then(({ data }) => { aktualisiere(data.session); bereit = true; route(); });
+  let setupUserId = null;
+  let setupStep = 0;
+  let setupEditing = false;
+  const setupDefaults = { level: 'neu', pace: 'normal', language: lang, goals: ['grundlagen','charts','strategien','risiko'] };
+  let setupValues = { ...setupDefaults };
+  const setupSteps = [
+    { title: {de:'Willkommen bei TradoLearn',en:'Welcome to TradoLearn'}, desc:{de:'Wir gehen die wichtigsten Einstellungen gemeinsam durch. Du kannst alles später jederzeit ändern.',en:'We’ll walk through the main settings together. You can change everything later.'}, type:'welcome' },
+    { title:{de:'Welche Sprache möchtest du nutzen?',en:'Which language would you like to use?'}, desc:{de:'Die Sprache kannst du auch später unten auf der Seite wechseln.',en:'You can also change the language at the bottom of the page later.'}, type:'language' },
+    { title:{de:'Wie viel Trading-Erfahrung hast du?',en:'How much trading experience do you have?'}, desc:{de:'So können wir deinen Einstieg besser auf dich ausrichten.',en:'This helps us tailor your starting point.'}, type:'level' },
+    { title:{de:'Was möchtest du lernen?',en:'What would you like to learn?'}, desc:{de:'Wähle alles aus, was dich interessiert. Deine Auswahl ist später änderbar.',en:'Choose everything that interests you. You can change this later.'}, type:'goals' },
+    { title:{de:'Wie möchtest du lernen?',en:'How would you like to learn?'}, desc:{de:'Das ist nur deine persönliche Präferenz – du kannst jederzeit anders lernen.',en:'This is just your preference. You can learn differently at any time.'}, type:'pace' },
+    { title:{de:'Das erwartet dich',en:'What you can explore'}, desc:{de:'Dein Lernbereich verbindet mehrere Möglichkeiten. Starte in deinem Tempo.',en:'Your learning area brings several ways to practice together. Start at your own pace.'}, type:'tour' },
+    { title:{de:'Alles bereit!',en:'You’re all set!'}, desc:{de:'Deine Einstellungen werden auf diesem Gerät für dein Konto gespeichert. Du kannst sie jederzeit erneut öffnen.',en:'Your preferences are saved on this device for your account. You can reopen them anytime.'}, type:'done' }
+  ];
+  const setupText = (de,en) => lang === 'de' ? de : en;
+  function setupKey(){ return 'tradolearn-setup-' + (setupUserId || 'guest'); }
+  function setupOpen(edit=false){
+    setupEditing=edit; setupStep=0;
+    try { const saved=JSON.parse(localStorage.getItem(setupKey())||'null'); setupValues={...setupDefaults,...(saved||{})}; if(!Array.isArray(setupValues.goals)) setupValues.goals=setupDefaults.goals.slice(); } catch(e){ setupValues={...setupDefaults}; }
+    setupRender(); if(!$('setup-fenster').open) $('setup-fenster').showModal();
+  }
+  function setupRender(){
+    const step=setupSteps[setupStep], de=lang==='de';
+    $('setup-label').textContent=setupText('EINRICHTUNG · SCHRITT '+(setupStep+1)+' VON '+setupSteps.length,'SETUP · STEP '+(setupStep+1)+' OF '+setupSteps.length);
+    $('setup-titel').textContent=step.title[lang]; $('setup-beschreibung').textContent=step.desc[lang];
+    $('setup-fortschritt').style.width=((setupStep+1)/setupSteps.length*100)+'%';
+    $('setup-zurueck').hidden=setupStep===0; $('setup-ueberspringen').hidden=step.type==='done'||step.type==='welcome';
+    $('setup-weiter').textContent=setupStep===setupSteps.length-1?setupText('Los geht’s','Let’s go'):setupText('Weiter','Next');
+    const option=(name,value,title,desc,checked,type='radio')=>`<label class="setup-option"><input type="${type}" name="${name}" value="${value}" ${checked?'checked':''}><span><strong>${title}</strong>${desc?`<small>${desc}</small>`:''}</span></label>`;
+    let html='';
+    if(step.type==='welcome') html=`<div class="setup-tour"><article><strong>${setupText('Schritt für Schritt','Step by step')}</strong><span>${setupText('Du stellst zuerst deine Lernpräferenzen ein.','Set your learning preferences first.')}</span></article><article><strong>${setupText('Du behältst die Kontrolle','You stay in control')}</strong><span>${setupText('Nichts ist endgültig – du kannst deine Auswahl später bearbeiten.','Nothing is final — you can edit your choices later.')}</span></article></div>`;
+    if(step.type==='language') html='<div class="setup-options">'+option('language','de','Deutsch','',setupValues.language==='de')+option('language','en','English','',setupValues.language==='en')+'</div>';
+    if(step.type==='level') html='<div class="setup-options">'+option('level','neu',de?'Ich fange gerade an':'I’m just starting',de?'Ich möchte die Grundlagen verstehen.':'I want to understand the basics.',setupValues.level==='neu')+option('level','kenntnisse',de?'Ich kenne die Grundlagen':'I know the basics',de?'Ich möchte mein Wissen vertiefen.':'I want to build on what I know.',setupValues.level==='kenntnisse')+'</div>';
+    if(step.type==='goals'){const goals=[['grundlagen',de?'Trading-Grundlagen':'Trading basics',de?'Begriffe und Zusammenhänge verstehen':'Understand terms and concepts'],['charts',de?'Technische Analyse & Charts':'Technical analysis & charts',de?'Kurse und Muster lesen':'Read prices and patterns'],['strategien',de?'Strategien & Markttrends':'Strategies & market trends',de?'Methoden und aktuelle Bewegungen einordnen':'Explore methods and market movements'],['psyche',de?'Trading-Psychologie':'Trading psychology',de?'Emotionen besser einschätzen':'Understand emotions'],['risiko',de?'Risikomanagement':'Risk management',de?'Risiken und Positionsgrößen verstehen':'Understand risk and position sizing'],['praxis',de?'Interaktiv üben':'Interactive practice',de?'Mit Quiz und Simulator lernen':'Learn with quizzes and simulator']];html='<div class="setup-options">'+goals.map(g=>option('goals',g[0],g[1],g[2],setupValues.goals.includes(g[0]),'checkbox')).join('')+'</div>';}
+    if(step.type==='pace') html='<div class="setup-options">'+option('pace','ruhig',de?'In Ruhe':'At a relaxed pace',de?'Lieber langsam und verständlich.':'Slow and clear.',setupValues.pace==='ruhig')+option('pace','normal',de?'Ausgewogen':'Balanced',de?'Eine Mischung aus Erklärungen und Übung.':'A mix of explanations and practice.',setupValues.pace==='normal')+option('pace','praxis',de?'Direkt ausprobieren':'Learn by doing',de?'Möglichst schnell in Quiz und Simulator.':'Jump into quizzes and the simulator.',setupValues.pace==='praxis')+'</div>';
+    if(step.type==='tour') html=`<div class="setup-tour"><article><strong>📘 ${de?'Lektionen':'Lessons'}</strong><span>${de?'Lerne die Grundlagen in kleinen Abschnitten.':'Learn the basics in short sections.'}</span></article><article><strong>✓ ${de?'Quizfragen':'Quizzes'}</strong><span>${de?'Teste dein Verständnis und sammle Punkte.':'Check your understanding and earn points.'}</span></article><article><strong>⌁ ${de?'Trading-Simulator':'Trading simulator'}</strong><span>${de?'Übe mit Spielgeld statt echtem Kapital.':'Practice with play money, not real capital.'}</span></article><article><strong>↗ ${de?'Fortschritt':'Progress'}</strong><span>${de?'Arbeite dich in deinem eigenen Tempo durch die Inhalte.':'Work through the content at your own pace.'}</span></article></div>`;
+    if(step.type==='done') html=`<div class="setup-tour"><article><strong>${de?'Dein Einstieg ist vorbereitet.':'Your starting point is ready.'}</strong><span>${de?'Deine Auswahl wird gespeichert. Die Einstellungen bleiben später erreichbar.':'Your choices will be saved. Settings remain available later.'}</span></article></div>`;
+    $('setup-inhalt').innerHTML=html;
+    $('setup-inhalt').querySelectorAll('input').forEach(input=>input.addEventListener('change',()=>{ if(input.name==='goals'){const arr=Array.from($('setup-inhalt').querySelectorAll('input[name="goals"]:checked')).map(x=>x.value);setupValues.goals=arr;} else setupValues[input.name]=input.value; if(input.name==='language'){setLang(input.value); setupRender();} }));
+  }
+  function setupSave(){
+    try{localStorage.setItem(setupKey(),JSON.stringify({...setupValues,completed:true,updatedAt:new Date().toISOString()}));}catch(e){}
+    $('setup-fenster').close();
+    if(!setupEditing) location.hash='#lektion';
+  }
+  $('setup-weiter').addEventListener('click',()=>{const step=setupSteps[setupStep];if(step.type==='language'){const chosen=$('setup-inhalt').querySelector('input[name="language"]:checked');if(chosen)setupValues.language=chosen.value;}if(step.type==='level'||step.type==='pace'){const chosen=$('setup-inhalt').querySelector(`input[name="${step.type}"]:checked`);if(chosen)setupValues[step.type]=chosen.value;}if(step.type==='goals')setupValues.goals=Array.from($('setup-inhalt').querySelectorAll('input[name="goals"]:checked')).map(x=>x.value);if(setupStep===setupSteps.length-1){setupSave();return;}setupStep++;setupRender();});
+  $('setup-zurueck').addEventListener('click',()=>{if(setupStep>0){setupStep--;setupRender();}});
+  $('setup-ueberspringen').addEventListener('click',()=>{if(setupStep===setupSteps.length-1){setupSave();return;}setupStep++;setupRender();});
+  $('setup-schliessen').addEventListener('click',()=>{try{localStorage.setItem(setupKey(),JSON.stringify({...setupValues,completed:true,skipped:true}));}catch(e){}$('setup-fenster').close();if(!setupEditing)location.hash='#lektion';});
+  $('nav-einstellungen').addEventListener('click',()=>setupOpen(true));
+
+  db.auth.getSession().then(({ data }) => { aktualisiere(data.session); bereit = true; route(); if(data.session){setupUserId=data.session.user.id;try{const saved=JSON.parse(localStorage.getItem(setupKey())||'null');if(!saved||!saved.completed)setupOpen(false);}catch(e){setupOpen(false);}} });
   db.auth.onAuthStateChange((_ereignis, session) => {
     const war = eingeloggt;
     aktualisiere(session);
     if (session && !war && bereit) {
-      $('anmelde-fenster').close();
-      location.hash = '#lektion';
+      $('anmelde-fenster').close(); setupUserId=session.user.id;
+      let done=false;try{done=!!JSON.parse(localStorage.getItem(setupKey())||'null')?.completed;}catch(e){}
+      if(!done) setupOpen(false); else location.hash='#lektion';
     }
+    if(!session){setupUserId=null;}
   });
 
   function oeffneAnmeldung(neu) { modus(neu); $('anmelde-fenster').showModal(); }
