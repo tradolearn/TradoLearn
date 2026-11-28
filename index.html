@@ -372,6 +372,37 @@
   body[data-theme="light"] input, body[data-theme="light"] select { background:#fbfdfb; border-color:#d6e0d7; }
   @media(max-width:760px) { .aktionen { gap:.55rem; } .theme-toggle { width:2.4rem;height:2.4rem; } }
   @media(max-width:520px) { .setup-options { grid-template-columns:1fr; } .setup-avatar-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+  /* ---------- Benutzerprofil ---------- */
+  .profil-seite { padding-top:2.5rem; padding-bottom:4rem; }
+  .profil-hero { display:flex; align-items:center; gap:1.2rem; flex-wrap:wrap; padding:1.5rem; margin:1.2rem 0 1.4rem; border:1px solid var(--linie); border-radius:1.1rem; background:linear-gradient(120deg,var(--flaeche),var(--flaeche-2)); }
+  .profil-avatar { display:grid; place-items:center; flex:0 0 auto; width:6.4rem; height:6.4rem; overflow:hidden; background:#171918; border:1px solid rgba(255,255,255,.16); }
+  .profil-avatar img { width:100%; height:100%; object-fit:cover; }
+  .profil-avatar.avatar-shape-square { border-radius:.9rem; }
+  .profil-avatar.avatar-shape-hexagon { border-radius:0; clip-path:polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0 50%); }
+  .profil-identitaet { flex:1 1 12rem; min-width:0; }
+  .profil-identitaet h1 { margin:0; font-size:clamp(1.7rem,4vw,2.4rem); overflow-wrap:anywhere; }
+  .profil-identitaet p { margin:.25rem 0 0; color:var(--leise); }
+  .profil-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin-bottom:1rem; }
+  .profil-stat,.profil-karte { min-width:0; padding:1.25rem; border:1px solid var(--linie); border-radius:.9rem; background:var(--flaeche); }
+  .profil-stat { display:flex; flex-direction:column; gap:.3rem; }
+  .profil-stat-icon { display:grid; place-items:center; width:2.2rem; height:2.2rem; border-radius:.65rem; background:rgba(74,168,104,.13); color:var(--gruen); font-size:1.2rem; }
+  .profil-stat small,.profil-stat span:last-child,.profil-hinweis { color:var(--leise); }
+  .profil-stat strong { font-size:2rem; line-height:1.2; }
+  .profil-karten { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; margin-bottom:1rem; }
+  .profil-karte h2 { font-size:1.1rem; margin:0 0 .65rem; }
+  .profil-karte p { color:var(--leise); margin:.2rem 0 1rem; }
+  .profil-progress { height:.65rem; border-radius:99px; overflow:hidden; background:var(--linie); margin:.8rem 0 .45rem; }
+  .profil-progress span { display:block; height:100%; width:0; border-radius:inherit; background:var(--gruen); transition:width .25s ease; }
+  .profil-details { margin:0; }
+  .profil-details div { display:flex; justify-content:space-between; gap:1rem; padding:.7rem 0; border-bottom:1px solid var(--linie); }
+  .profil-details div:last-child { border-bottom:0; }
+  .profil-details dt { color:var(--leise); }
+  .profil-details dd { margin:0; text-align:right; overflow-wrap:anywhere; }
+  .profil-hinweis { font-size:.88rem; margin:1rem 0; }
+  body[data-theme="light"] .profil-hero { background:linear-gradient(120deg,#fff,#f3f8f4); }
+  @media(max-width:640px) { .profil-stats { grid-template-columns:1fr; gap:.65rem; } .profil-stat { display:grid; grid-template-columns:2.2rem 1fr; align-items:center; column-gap:.75rem; } .profil-stat-icon { grid-row:span 3; } .profil-stat strong { font-size:1.5rem; } .profil-karten { grid-template-columns:1fr; } .profil-hero { padding:1rem; } }
+
 </style>
 </head>
 <body data-theme="dark">
@@ -384,6 +415,7 @@
         <a href="#about" data-seite="about" data-i18n="nav_about"></a>
         <a href="#support" data-seite="support" data-i18n="nav_support"></a>
         <a href="#lektion" data-seite="lektion" id="nav-lektion" data-i18n="nav_lektion" hidden></a>
+        <a href="#profil" data-seite="profil" id="nav-profil" hidden>Profil</a>
       </nav>
       <div class="aktionen">
         <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Zum hellen Design wechseln" title="Zum hellen Design wechseln" aria-pressed="false">
@@ -522,6 +554,29 @@
         <p data-i18n="support_text"></p>
         <a class="knopf gross" data-link="discord" target="_blank" rel="noopener" data-i18n="support_discord"></a>
       </div>
+    </div>
+
+    <!-- Benutzerprofil (nur eingeloggt) -->
+    <div class="huelle" id="seite-profil" hidden>
+      <section class="seite profil-seite">
+        <p class="about-kicker">TRADOLEARN · PROFIL</p>
+        <div class="profil-hero">
+          <div id="profil-avatar" class="profil-avatar" aria-label="Profilbild"></div>
+          <div class="profil-identitaet"><h1 id="profil-name">Trader</h1><p id="profil-level">Trading-Lernprofil</p><p id="profil-seit">Mitglied bei TradoLearn</p></div>
+          <button class="knopf rand" id="profil-bearbeiten" type="button">Profil bearbeiten</button>
+        </div>
+        <div class="profil-stats" aria-live="polite">
+          <article class="profil-stat"><span class="profil-stat-icon">✦</span><small id="profil-stat-punkte-label">Punkte gesammelt</small><strong id="profil-stat-punkte">0</strong><span id="profil-stat-punkte-hinweis">Dein Lernfortschritt</span></article>
+          <article class="profil-stat"><span class="profil-stat-icon">✓</span><small id="profil-stat-level-label">Abgeschlossene Lektionen</small><strong id="profil-stat-level">0</strong><span id="profil-stat-level-hinweis">Schritt für Schritt</span></article>
+          <article class="profil-stat"><span class="profil-stat-icon">◷</span><small id="profil-stat-aktiv-label">Dabei seit</small><strong id="profil-stat-aktiv">Heute</strong><span id="profil-stat-aktiv-hinweis">Dein TradoLearn-Konto</span></article>
+        </div>
+        <div class="profil-karten">
+          <article class="profil-karte"><h2 id="profil-fortschritt-titel">Dein Lernfortschritt</h2><p id="profil-fortschritt-text">Jede abgeschlossene Lektion bringt dich weiter.</p><div class="profil-progress"><span id="profil-progress-bar"></span></div><small id="profil-progress-label">0 % des ersten Lernziels</small></article>
+          <article class="profil-karte"><h2 id="profil-info-titel">Über dich</h2><dl class="profil-details"><div><dt id="profil-info-erfahrung">Trading-Erfahrung</dt><dd id="profil-info-level">Anfänger</dd></div><div><dt id="profil-info-avatar">Avatar</dt><dd id="profil-info-avatar-name">Doktorhut & Pfeil</dd></div><div><dt id="profil-info-email">E-Mail</dt><dd id="profil-email">—</dd></div></dl></article>
+        </div>
+        <p class="profil-hinweis" id="profil-hinweis">Deine Lernstatistik wird für dieses Konto gespeichert.</p>
+        <button class="knopf gross" id="profil-zur-lektion" type="button">Weiterlernen</button>
+      </section>
     </div>
 
     <!-- Lektion (nur eingeloggt) -->
@@ -768,18 +823,19 @@
 
   function route() {
     let name = (location.hash || '#home').slice(1);
-    if (!['home', 'about', 'support', 'lektion'].includes(name)) name = 'home';
-    if (name === 'lektion' && !eingeloggt) {
+    if (!['home', 'about', 'support', 'lektion', 'profil'].includes(name)) name = 'home';
+    if ((name === 'lektion' || name === 'profil') && !eingeloggt) {
       name = 'home';
       if (bereit) history.replaceState(null, '', '#home');
     }
     aktuelleSeite = name;
-    ['home', 'about', 'support', 'lektion'].forEach(n => { $('seite-' + n).hidden = n !== name; });
+    ['home', 'about', 'support', 'lektion', 'profil'].forEach(n => { $('seite-' + n).hidden = n !== name; });
     document.querySelectorAll('.links a').forEach(a => {
       if (a.dataset.seite === name) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
     if (name === 'home') simZeichne();
     if (name === 'lektion') starteLektion();
+    if (name === 'profil') profilRendern();
     window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', route);
@@ -812,8 +868,11 @@
   let registrieren = false;
 
   function aktualisiere(session) {
+    window.__tradolearnSessionEmail = session?.user?.email || '';
     eingeloggt = !!session;
     $('nav-lektion').hidden = !eingeloggt;
+    $('nav-profil').hidden = !eingeloggt;
+    $('nav-profil').textContent = lang === 'de' ? 'Profil' : 'Profile';
     $('nav-einstellungen').hidden = !eingeloggt;
     $('nav-einstellungen').textContent = lang === 'de' ? 'Einstellungen' : 'Settings';
     $('nav-anmelden').dataset.i18n = eingeloggt ? 'nav_abmelden' : 'nav_anmelden';
@@ -822,6 +881,34 @@
     applyLang();
     if (bereit) route();
   }
+
+  function profilStatKey(){ return 'tradolearn-stats-' + (setupUserId || 'guest'); }
+  function profilStatsLaden(){
+    try { return JSON.parse(localStorage.getItem(profilStatKey()) || '{}') || {}; } catch(e) { return {}; }
+  }
+  function profilRendern(){
+    let saved={}; try{saved=JSON.parse(localStorage.getItem(setupKey())||'{}')||{};}catch(e){}
+    const de=lang==='de', stats=profilStatsLaden(), userEmail=(window.__tradolearnSessionEmail||'');
+    const avatar=avatarImage(saved.avatar||'avatar1'), shape=avatarShapeClass(saved.avatarShape||'round');
+    const pic=$('profil-avatar'); pic.className='profil-avatar '+shape; pic.style.background=(avatarColors.find(c=>c.value===(saved.avatarColor||'dark'))||avatarColors[0]).hex; pic.innerHTML=`<img src="${avatar}" alt="${de?'Profilbild von':'Profile picture of'} ${String(saved.username||'Trader').replace(/[&<>"']/g,'')}">`;
+    $('profil-name').textContent=saved.username|| (de?'Trader':'Trader');
+    const levels={anfaenger:de?'Anfänger':'Beginner',beschaeftigt:de?'Schon damit beschäftigt':'Some experience',pro:de?'Fortgeschritten / Profi':'Advanced / Pro'};
+    $('profil-level').textContent=levels[saved.level]||levels.anfaenger;
+    const created=stats.createdAt||saved.updatedAt||'';
+    $('profil-seit').textContent=de?'Dein persönlicher Lernbereich':'Your personal learning space';
+    $('profil-stat-punkte-label').textContent=de?'Punkte gesammelt':'Points earned'; $('profil-stat-punkte').textContent=String(Number(stats.points)||0); $('profil-stat-punkte-hinweis').textContent=de?'Aus abgeschlossenen Quizfragen':'From completed quiz questions';
+    $('profil-stat-level-label').textContent=de?'Abgeschlossene Lektionen':'Lessons completed'; $('profil-stat-level').textContent=String(Number(stats.lessonsCompleted)||0); $('profil-stat-level-hinweis').textContent=de?'Dein Lernfortschritt':'Your learning progress';
+    $('profil-stat-aktiv-label').textContent=de?'Erste Aktivität':'First activity';
+    let joined=de?'Heute':'Today'; if(created){const d=new Date(created); if(!Number.isNaN(d.getTime()))joined=new Intl.DateTimeFormat(de?'de-DE':'en-GB',{day:'2-digit',month:'short',year:'numeric'}).format(d);}
+    $('profil-stat-aktiv').textContent=joined; $('profil-stat-aktiv-hinweis').textContent=de?'Erste abgeschlossene Lektion':'First completed lesson';
+    $('profil-fortschritt-titel').textContent=de?'Dein Lernfortschritt':'Your learning progress'; $('profil-fortschritt-text').textContent=de?'Schließe Quizfragen und Lektionen ab, um hier deinen Fortschritt zu sehen.':'Complete quiz questions and lessons to track your progress here.';
+    const pct=Math.min(100,Math.round((Number(stats.lessonsCompleted)||0)/5*100)); $('profil-progress-bar').style.width=pct+'%'; $('profil-progress-label').textContent=de?`${pct} % des ersten Lernziels`:`${pct}% of your first learning goal`;
+    $('profil-info-titel').textContent=de?'Über dich':'About you'; $('profil-info-erfahrung').textContent=de?'Trading-Erfahrung':'Trading experience'; $('profil-info-level').textContent=levels[saved.level]||levels.anfaenger; $('profil-info-avatar').textContent=de?'Avatar':'Avatar'; $('profil-info-avatar-name').textContent=avatarNames[Math.max(0,Math.min(9,(parseInt(String(saved.avatar||'avatar1').replace('avatar',''),10)||1)-1))]; $('profil-info-email').textContent=de?'E-Mail':'Email'; $('profil-email').textContent=userEmail||'—';
+    $('profil-hinweis').textContent=de?'Deine Profil-Auswahl wird mit deinen Einstellungen gespeichert. Lernstatistiken werden in diesem Browser pro Konto geführt.':'Your profile choices are saved with your settings. Learning stats are stored per account in this browser.';
+    $('profil-zur-lektion').textContent=de?'Weiterlernen':'Continue learning'; $('profil-bearbeiten').textContent=de?'Profil bearbeiten':'Edit profile';
+  }
+  $('profil-bearbeiten').addEventListener('click',()=>settingsOpen());
+  $('profil-zur-lektion').addEventListener('click',()=>location.hash='#lektion');
 
   let setupUserId = null;
   let setupStep = 0;
@@ -1322,6 +1409,7 @@
     k.appendChild(el('p', null, t('lek_verdient')));
     k.appendChild(el('div', 'punkte', t('lek_punkte', { p: punkte })));
     k.appendChild(el('p', null, t('lek_von', { m: anzahl * PUNKTE })));
+    try { const stats=profilStatsLaden(); stats.points=(Number(stats.points)||0)+punkte; stats.lessonsCompleted=(Number(stats.lessonsCompleted)||0)+1; stats.createdAt=stats.createdAt||new Date().toISOString(); stats.lastCompletedAt=new Date().toISOString(); localStorage.setItem(profilStatKey(),JSON.stringify(stats)); } catch(e) {}
     const nochmal = el('button', 'knopf', t('lek_nochmal'));
     nochmal.type = 'button';
     nochmal.addEventListener('click', starteLektion);
